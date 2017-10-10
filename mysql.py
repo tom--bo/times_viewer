@@ -12,7 +12,7 @@ class MySQL:
 
     def get_task_list(self):
         conn = self.engine.connect()
-        s = text("SELECT tasks.id, users.name, tasks.name, begin, finish, tasks.created_at FROM tasks INNER JOIN users ON users.id = tasks.uid WHERE tasks.finish IS NOT NULL")
+        s = text("SELECT tasks.id, users.name, tasks.name, begin, finish, tasks.created_at FROM tasks INNER JOIN users ON users.id = tasks.uid WHERE tasks.finish IS NOT NULL ORDER BY id ASC")
         tasklist = conn.execute(s).fetchall()
 
 #         for row in tasklist:
