@@ -20,3 +20,13 @@ class MySQL:
 #             print("Name:" + row['name'] + "  begin:" + str(row['begin']) + "  finish:" + str(row['finish']))
         return tasklist
 
+
+
+    def get_latest_task_list(self, latest_time):
+        conn = self.engine.connect()
+        s = text("SELECT tasks.id, users.name, tasks.name, begin, finish, tasks.created_at FROM tasks INNER JOIN users ON users.id = tasks.uid WHERE tasks.finish IS NOT NULL AND begin > '" + latest_time + "' ORDER BY id ASC")
+        tasklist = conn.execute(s).fetchall()
+
+        return tasklist
+
+

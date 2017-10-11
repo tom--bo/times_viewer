@@ -47,21 +47,28 @@ def add_tasks(tasks):
             'user':         task[1],
             'task':         task[2],
             'begin':        jst.localize(task[3]).strftime('%Y-%m-%d %H:%M:%S'),
-            'finish':       task[4].strftime('%Y-%m-%d %H:%M:%S'),
+            'finish':       jst.localize(task[4]).strftime('%Y-%m-%d %H:%M:%S'),
             'elapsed_time': delta.total_seconds(),
-            'created_at':   task[5].strftime('%Y-%m-%d %H:%M:%S')
+            'created_at':   jst.localize(task[5]).strftime('%Y-%m-%d %H:%M:%S')
         }
         res = es.index(index=index, doc_type='mydoc', body=doc)
 
-def get_latest():
-    #res = es.get(index=index, doc_type='mydoc', id=1)
-    return res
+def get_latest_datetime():
+    res = es.search(index=index, doc_type='mydoc', sort=["begin:desc"])
+    # for r in res['hits']['hits']:
+    #     print(r['_source']['begin'])
+    return res['hits']['hits'][0]['_source']['begin']
 
  
 if __name__ == '__main__':
-    initialize_es()
+    init_flag = False 
     db = MySQL(0)
-    ret = db.get_task_list()
+    if init_flag:
+        initialize_es()
+        ret = db.get_task_list()
+    else:
+        latest_time = get_latest_datetime()
+        ret = db.get_latest_task_list(latest_time)
 
     add_tasks(ret)
 
